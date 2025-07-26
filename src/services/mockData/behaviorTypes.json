@@ -1,0 +1,50 @@
+[
+  {
+    "id": 1,
+    "name": "Barking",
+    "icon": "Volume2",
+    "isCustom": false
+  },
+  {
+    "id": 2,
+    "name": "Chewing",
+    "icon": "Smile",
+    "isCustom": false
+  },
+  {
+    "id": 3,
+    "name": "Aggression",
+    "icon": "AlertTriangle",
+    "isCustom": false
+  },
+  {
+    "id": 4,
+    "name": "Accidents",
+    "icon": "Droplets",
+    "isCustom": false
+  },
+  {
+    "id": 5,
+    "name": "Jumping",
+    "icon": "ArrowUp",
+    "isCustom": false
+  },
+  {
+    "id": 6,
+    "name": "Whining",
+    "icon": "Volume1",
+    "isCustom": false
+  },
+  {
+    "id": 7,
+    "name": "Digging",
+    "icon": "Shovel",
+    "isCustom": false
+  },
+  {
+    "id": 8,
+    "name": "Running",
+    "icon": "Zap",
+    "isCustom": false
+  }
+]

@@ -1,0 +1,92 @@
+[
+  {
+    "id": 1,
+    "name": "Doorbell",
+    "category": "Sounds",
+    "isCustom": false
+  },
+  {
+    "id": 2,
+    "name": "Other dogs",
+    "category": "Animals",
+    "isCustom": false
+  },
+  {
+    "id": 3,
+    "name": "Strangers",
+    "category": "People",
+    "isCustom": false
+  },
+  {
+    "id": 4,
+    "name": "Food",
+    "category": "Resources",
+    "isCustom": false
+  },
+  {
+    "id": 5,
+    "name": "Loud noises",
+    "category": "Sounds",
+    "isCustom": false
+  },
+  {
+    "id": 6,
+    "name": "Separation",
+    "category": "Emotional",
+    "isCustom": false
+  },
+  {
+    "id": 7,
+    "name": "Excitement",
+    "category": "Emotional",
+    "isCustom": false
+  },
+  {
+    "id": 8,
+    "name": "Boredom",
+    "category": "Emotional",
+    "isCustom": false
+  },
+  {
+    "id": 9,
+    "name": "Territorial",
+    "category": "Behavioral",
+    "isCustom": false
+  },
+  {
+    "id": 10,
+    "name": "Pain/Discomfort",
+    "category": "Physical",
+    "isCustom": false
+  },
+  {
+    "id": 11,
+    "name": "Long absence",
+    "category": "Environmental",
+    "isCustom": false
+  },
+  {
+    "id": 12,
+    "name": "New environment",
+    "category": "Environmental",
+    "isCustom": false
+  },
+  {
+    "id": 13,
+    "name": "Separation anxiety",
+    "category": "Emotional",
+    "isCustom": false
+  },
+  {
+    "id": 14,
+    "name": "Thunder/Fireworks",
+    "category": "Sounds",
+    "isCustom": false
+  },
+  {
+    "id": 15,
+    "name": "Unknown",
+    "category": "Other",
+    "isCustom": false
+  }
+]

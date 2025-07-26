@@ -1,0 +1,98 @@
+[
+  {
+    "id": 1,
+    "type": "Barking",
+    "customType": null,
+    "trigger": "Doorbell",
+    "customTrigger": null,
+    "intensity": 4,
+    "timestamp": "2024-01-15T14:30:00.000Z",
+    "location": "Living Room",
+    "notes": "Barked continuously for 2 minutes when delivery person arrived",
+    "duration": 2
+  },
+  {
+    "id": 2,
+    "type": "Chewing",
+    "customType": null,
+    "trigger": "Boredom",
+    "customTrigger": null,
+    "intensity": 2,
+    "timestamp": "2024-01-15T09:15:00.000Z",
+    "location": "Kitchen",
+    "notes": "Chewed on shoe while left alone for 30 minutes",
+    "duration": 30
+  },
+  {
+    "id": 3,
+    "type": "Jumping",
+    "customType": null,
+    "trigger": "Excitement",
+    "customTrigger": null,
+    "intensity": 3,
+    "timestamp": "2024-01-14T18:45:00.000Z",
+    "location": "Front Door",
+    "notes": "Jumped on family members when they came home from work",
+    "duration": 5
+  },
+  {
+    "id": 4,
+    "type": "Accidents",
+    "customType": null,
+    "trigger": "Long absence",
+    "customTrigger": null,
+    "intensity": 1,
+    "timestamp": "2024-01-14T16:20:00.000Z",
+    "location": "Bedroom",
+    "notes": "Had accident while owners were away for 4 hours",
+    "duration": null
+  },
+  {
+    "id": 5,
+    "type": "Aggression",
+    "customType": null,
+    "trigger": "Other dogs",
+    "customTrigger": null,
+    "intensity": 5,
+    "timestamp": "2024-01-13T11:30:00.000Z",
+    "location": "Park",
+    "notes": "Showed aggressive behavior towards another dog at the dog park",
+    "duration": 3
+  },
+  {
+    "id": 6,
+    "type": "Whining",
+    "customType": null,
+    "trigger": "Separation anxiety",
+    "customTrigger": null,
+    "intensity": 3,
+    "timestamp": "2024-01-13T08:00:00.000Z",
+    "location": "Living Room",
+    "notes": "Whined for 15 minutes after owners left for work",
+    "duration": 15
+  },
+  {
+    "id": 7,
+    "type": "Barking",
+    "customType": null,
+    "trigger": "Strangers",
+    "customTrigger": null,
+    "intensity": 4,
+    "timestamp": "2024-01-12T19:15:00.000Z",
+    "location": "Backyard",
+    "notes": "Barked at people walking by the fence",
+    "duration": 5
+  },
+  {
+    "id": 8,
+    "type": "Digging",
+    "customType": null,
+    "trigger": "Boredom",
+    "customTrigger": null,
+    "intensity": 2,
+    "timestamp": "2024-01-12T14:20:00.000Z",
+    "location": "Garden",
+    "notes": "Dug a small hole in the flower bed",
+    "duration": 10
+  }
+]

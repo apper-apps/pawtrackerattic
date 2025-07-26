@@ -1,60 +1,219 @@
-import triggerTypesData from "@/services/mockData/triggerTypes.json";
+import { toast } from 'react-toastify';
 
 class TriggerTypeService {
   constructor() {
-    this.triggerTypes = [...triggerTypesData];
+    const { ApperClient } = window.ApperSDK;
+    this.apperClient = new ApperClient({
+      apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+      apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+    });
+    this.tableName = 'trigger_type';
   }
 
   async getAll() {
-    await new Promise(resolve => setTimeout(resolve, 200));
-    return [...this.triggerTypes];
+    try {
+      const params = {
+        fields: [
+          { field: { Name: "Id" } },
+          { field: { Name: "Name" } },
+          { field: { Name: "Tags" } },
+          { field: { Name: "Owner" } },
+          { field: { Name: "category" } },
+          { field: { Name: "isCustom" } }
+        ],
+        orderBy: [
+          { fieldName: "Name", sorttype: "ASC" }
+        ]
+      };
+
+      const response = await this.apperClient.fetchRecords(this.tableName, params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        toast.error(response.message);
+        return [];
+      }
+
+      return response.data || [];
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error fetching trigger types:", error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      return [];
+    }
   }
 
   async getById(id) {
-    await new Promise(resolve => setTimeout(resolve, 200));
-    const trigger = this.triggerTypes.find(t => t.id === parseInt(id));
-    if (!trigger) {
-      throw new Error("Trigger type not found");
+    try {
+      const params = {
+        fields: [
+          { field: { Name: "Id" } },
+          { field: { Name: "Name" } },
+          { field: { Name: "Tags" } },
+          { field: { Name: "Owner" } },
+          { field: { Name: "category" } },
+          { field: { Name: "isCustom" } }
+        ]
+      };
+
+      const response = await this.apperClient.getRecordById(this.tableName, parseInt(id), params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        toast.error(response.message);
+        return null;
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error(`Error fetching trigger type with ID ${id}:`, error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      return null;
     }
-    return { ...trigger };
   }
 
   async create(triggerData) {
-    await new Promise(resolve => setTimeout(resolve, 300));
-    
-    const newTrigger = {
-      id: Math.max(...this.triggerTypes.map(t => t.id)) + 1,
-      ...triggerData,
-      isCustom: true
-    };
-    
-    this.triggerTypes.push(newTrigger);
-    return { ...newTrigger };
+    try {
+      // Only include Updateable fields
+      const params = {
+        records: [{
+          Name: triggerData.Name || triggerData.name,
+          Tags: triggerData.Tags || '',
+          category: triggerData.category || 'Other',
+          isCustom: triggerData.isCustom !== undefined ? triggerData.isCustom : true
+        }]
+      };
+
+      const response = await this.apperClient.createRecord(this.tableName, params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        toast.error(response.message);
+        return null;
+      }
+
+      if (response.results) {
+        const successfulRecords = response.results.filter(result => result.success);
+        const failedRecords = response.results.filter(result => !result.success);
+        
+        if (failedRecords.length > 0) {
+          console.error(`Failed to create trigger type ${failedRecords.length} records:${JSON.stringify(failedRecords)}`);
+          
+          failedRecords.forEach(record => {
+            record.errors?.forEach(error => {
+              toast.error(`${error.fieldLabel}: ${error.message}`);
+            });
+            if (record.message) toast.error(record.message);
+          });
+        }
+        
+        return successfulRecords.length > 0 ? successfulRecords[0].data : null;
+      }
+
+      return null;
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error creating trigger type record:", error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      return null;
+    }
   }
 
   async update(id, triggerData) {
-    await new Promise(resolve => setTimeout(resolve, 300));
-    
-    const index = this.triggerTypes.findIndex(t => t.id === parseInt(id));
-    if (index === -1) {
-      throw new Error("Trigger type not found");
+    try {
+      // Only include Updateable fields plus Id
+      const params = {
+        records: [{
+          Id: parseInt(id),
+          Name: triggerData.Name || triggerData.name,
+          Tags: triggerData.Tags || '',
+          category: triggerData.category || 'Other',
+          isCustom: triggerData.isCustom !== undefined ? triggerData.isCustom : true
+        }]
+      };
+
+      const response = await this.apperClient.updateRecord(this.tableName, params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        toast.error(response.message);
+        return null;
+      }
+
+      if (response.results) {
+        const successfulUpdates = response.results.filter(result => result.success);
+        const failedUpdates = response.results.filter(result => !result.success);
+        
+        if (failedUpdates.length > 0) {
+          console.error(`Failed to update trigger type ${failedUpdates.length} records:${JSON.stringify(failedUpdates)}`);
+          
+          failedUpdates.forEach(record => {
+            record.errors?.forEach(error => {
+              toast.error(`${error.fieldLabel}: ${error.message}`);
+            });
+            if (record.message) toast.error(record.message);
+          });
+        }
+        
+        return successfulUpdates.length > 0 ? successfulUpdates[0].data : null;
+      }
+
+      return null;
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error updating trigger type record:", error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      return null;
     }
-    
-    this.triggerTypes[index] = { ...this.triggerTypes[index], ...triggerData };
-    return { ...this.triggerTypes[index] };
   }
 
   async delete(id) {
-    await new Promise(resolve => setTimeout(resolve, 300));
-    
-    const index = this.triggerTypes.findIndex(t => t.id === parseInt(id));
-    if (index === -1) {
-      throw new Error("Trigger type not found");
+    try {
+      const params = {
+        RecordIds: [parseInt(id)]
+      };
+
+      const response = await this.apperClient.deleteRecord(this.tableName, params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        toast.error(response.message);
+        return false;
+      }
+
+      if (response.results) {
+        const successfulDeletions = response.results.filter(result => result.success);
+        const failedDeletions = response.results.filter(result => !result.success);
+        
+        if (failedDeletions.length > 0) {
+          console.error(`Failed to delete trigger type ${failedDeletions.length} records:${JSON.stringify(failedDeletions)}`);
+          
+          failedDeletions.forEach(record => {
+            if (record.message) toast.error(record.message);
+          });
+        }
+        
+        return successfulDeletions.length > 0;
+      }
+
+      return false;
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error deleting trigger type record:", error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      return false;
     }
-    
-    const deleted = this.triggerTypes.splice(index, 1)[0];
-    return { ...deleted };
   }
 }
-
 export default new TriggerTypeService();

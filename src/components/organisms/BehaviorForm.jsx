@@ -26,9 +26,10 @@ const BehaviorForm = ({ initialBehavior, onSubmit, onCancel }) => {
   const [triggerTypes, setTriggerTypes] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
+useEffect(() => {
     const loadData = async () => {
       try {
+        setLoading(true);
         const [behaviors, triggers] = await Promise.all([
           behaviorTypeService.getAll(),
           triggerTypeService.getAll()
@@ -36,7 +37,10 @@ const BehaviorForm = ({ initialBehavior, onSubmit, onCancel }) => {
         setBehaviorTypes(behaviors);
         setTriggerTypes(triggers);
       } catch (error) {
+        console.error("Failed to load form data:", error);
         toast.error("Failed to load form data");
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -57,7 +61,7 @@ const BehaviorForm = ({ initialBehavior, onSubmit, onCancel }) => {
     }
   }, [initialBehavior]);
 
-  const handleSubmit = async (e) => {
+const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
@@ -65,20 +69,27 @@ const BehaviorForm = ({ initialBehavior, onSubmit, onCancel }) => {
       const behaviorData = {
         ...formData,
         timestamp: new Date(formData.timestamp).toISOString(),
-        duration: formData.duration ? parseInt(formData.duration) : null,
-        id: initialBehavior?.id
+        duration: formData.duration ? parseInt(formData.duration) : null
       };
 
+      let result;
       if (initialBehavior) {
-        await behaviorService.update(initialBehavior.id, behaviorData);
-        toast.success("Behavior updated successfully!");
+        result = await behaviorService.update(initialBehavior.Id || initialBehavior.id, behaviorData);
+        if (result) {
+          toast.success("Behavior updated successfully!");
+        }
       } else {
-        await behaviorService.create(behaviorData);
-        toast.success("Behavior logged successfully!");
+        result = await behaviorService.create(behaviorData);
+        if (result) {
+          toast.success("Behavior logged successfully!");
+        }
       }
 
-      onSubmit?.(behaviorData);
+      if (result) {
+        onSubmit?.(result);
+      }
     } catch (error) {
+      console.error("Error saving behavior:", error);
       toast.error("Failed to save behavior");
     } finally {
       setLoading(false);

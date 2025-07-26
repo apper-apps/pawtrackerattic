@@ -1,60 +1,219 @@
-import behaviorTypesData from "@/services/mockData/behaviorTypes.json";
+import { toast } from 'react-toastify';
 
 class BehaviorTypeService {
   constructor() {
-    this.behaviorTypes = [...behaviorTypesData];
+    const { ApperClient } = window.ApperSDK;
+    this.apperClient = new ApperClient({
+      apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+      apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+    });
+    this.tableName = 'behavior_type';
   }
 
   async getAll() {
-    await new Promise(resolve => setTimeout(resolve, 200));
-    return [...this.behaviorTypes];
+    try {
+      const params = {
+        fields: [
+          { field: { Name: "Id" } },
+          { field: { Name: "Name" } },
+          { field: { Name: "Tags" } },
+          { field: { Name: "Owner" } },
+          { field: { Name: "icon" } },
+          { field: { Name: "isCustom" } }
+        ],
+        orderBy: [
+          { fieldName: "Name", sorttype: "ASC" }
+        ]
+      };
+
+      const response = await this.apperClient.fetchRecords(this.tableName, params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        toast.error(response.message);
+        return [];
+      }
+
+      return response.data || [];
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error fetching behavior types:", error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      return [];
+    }
   }
 
   async getById(id) {
-    await new Promise(resolve => setTimeout(resolve, 200));
-    const type = this.behaviorTypes.find(t => t.id === parseInt(id));
-    if (!type) {
-      throw new Error("Behavior type not found");
+    try {
+      const params = {
+        fields: [
+          { field: { Name: "Id" } },
+          { field: { Name: "Name" } },
+          { field: { Name: "Tags" } },
+          { field: { Name: "Owner" } },
+          { field: { Name: "icon" } },
+          { field: { Name: "isCustom" } }
+        ]
+      };
+
+      const response = await this.apperClient.getRecordById(this.tableName, parseInt(id), params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        toast.error(response.message);
+        return null;
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error(`Error fetching behavior type with ID ${id}:`, error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      return null;
     }
-    return { ...type };
   }
 
   async create(typeData) {
-    await new Promise(resolve => setTimeout(resolve, 300));
-    
-    const newType = {
-      id: Math.max(...this.behaviorTypes.map(t => t.id)) + 1,
-      ...typeData,
-      isCustom: true
-    };
-    
-    this.behaviorTypes.push(newType);
-    return { ...newType };
+    try {
+      // Only include Updateable fields
+      const params = {
+        records: [{
+          Name: typeData.Name || typeData.name,
+          Tags: typeData.Tags || '',
+          icon: typeData.icon || 'Activity',
+          isCustom: typeData.isCustom !== undefined ? typeData.isCustom : true
+        }]
+      };
+
+      const response = await this.apperClient.createRecord(this.tableName, params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        toast.error(response.message);
+        return null;
+      }
+
+      if (response.results) {
+        const successfulRecords = response.results.filter(result => result.success);
+        const failedRecords = response.results.filter(result => !result.success);
+        
+        if (failedRecords.length > 0) {
+          console.error(`Failed to create behavior type ${failedRecords.length} records:${JSON.stringify(failedRecords)}`);
+          
+          failedRecords.forEach(record => {
+            record.errors?.forEach(error => {
+              toast.error(`${error.fieldLabel}: ${error.message}`);
+            });
+            if (record.message) toast.error(record.message);
+          });
+        }
+        
+        return successfulRecords.length > 0 ? successfulRecords[0].data : null;
+      }
+
+      return null;
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error creating behavior type record:", error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      return null;
+    }
   }
 
   async update(id, typeData) {
-    await new Promise(resolve => setTimeout(resolve, 300));
-    
-    const index = this.behaviorTypes.findIndex(t => t.id === parseInt(id));
-    if (index === -1) {
-      throw new Error("Behavior type not found");
+    try {
+      // Only include Updateable fields plus Id
+      const params = {
+        records: [{
+          Id: parseInt(id),
+          Name: typeData.Name || typeData.name,
+          Tags: typeData.Tags || '',
+          icon: typeData.icon || 'Activity',
+          isCustom: typeData.isCustom !== undefined ? typeData.isCustom : true
+        }]
+      };
+
+      const response = await this.apperClient.updateRecord(this.tableName, params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        toast.error(response.message);
+        return null;
+      }
+
+      if (response.results) {
+        const successfulUpdates = response.results.filter(result => result.success);
+        const failedUpdates = response.results.filter(result => !result.success);
+        
+        if (failedUpdates.length > 0) {
+          console.error(`Failed to update behavior type ${failedUpdates.length} records:${JSON.stringify(failedUpdates)}`);
+          
+          failedUpdates.forEach(record => {
+            record.errors?.forEach(error => {
+              toast.error(`${error.fieldLabel}: ${error.message}`);
+            });
+            if (record.message) toast.error(record.message);
+          });
+        }
+        
+        return successfulUpdates.length > 0 ? successfulUpdates[0].data : null;
+      }
+
+      return null;
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error updating behavior type record:", error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      return null;
     }
-    
-    this.behaviorTypes[index] = { ...this.behaviorTypes[index], ...typeData };
-    return { ...this.behaviorTypes[index] };
   }
 
   async delete(id) {
-    await new Promise(resolve => setTimeout(resolve, 300));
-    
-    const index = this.behaviorTypes.findIndex(t => t.id === parseInt(id));
-    if (index === -1) {
-      throw new Error("Behavior type not found");
+    try {
+      const params = {
+        RecordIds: [parseInt(id)]
+      };
+
+      const response = await this.apperClient.deleteRecord(this.tableName, params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        toast.error(response.message);
+        return false;
+      }
+
+      if (response.results) {
+        const successfulDeletions = response.results.filter(result => result.success);
+        const failedDeletions = response.results.filter(result => !result.success);
+        
+        if (failedDeletions.length > 0) {
+          console.error(`Failed to delete behavior type ${failedDeletions.length} records:${JSON.stringify(failedDeletions)}`);
+          
+          failedDeletions.forEach(record => {
+            if (record.message) toast.error(record.message);
+          });
+        }
+        
+        return successfulDeletions.length > 0;
+      }
+
+      return false;
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error deleting behavior type record:", error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      return false;
     }
-    
-    const deleted = this.behaviorTypes.splice(index, 1)[0];
-    return { ...deleted };
   }
 }
-
 export default new BehaviorTypeService();

@@ -26,8 +26,9 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const loadDashboardData = async () => {
+const loadDashboardData = async () => {
     try {
+      setLoading(true);
       setError(null);
       const [behaviors, types] = await Promise.all([
         behaviorService.getAll(),
@@ -49,7 +50,7 @@ const Dashboard = () => {
       // Calculate summary
       const totalToday = todayData.length;
       const averageIntensity = totalToday > 0 
-        ? todayData.reduce((sum, b) => sum + b.intensity, 0) / totalToday 
+        ? todayData.reduce((sum, b) => sum + (b.intensity || 0), 0) / totalToday 
         : 0;
 
       const behaviorCounts = {};
@@ -59,17 +60,25 @@ const Dashboard = () => {
         const behaviorType = behavior.customType || behavior.type;
         const trigger = behavior.customTrigger || behavior.trigger;
         
-        behaviorCounts[behaviorType] = (behaviorCounts[behaviorType] || 0) + 1;
-        triggerCounts[trigger] = (triggerCounts[trigger] || 0) + 1;
+        if (behaviorType) {
+          behaviorCounts[behaviorType] = (behaviorCounts[behaviorType] || 0) + 1;
+        }
+        if (trigger) {
+          triggerCounts[trigger] = (triggerCounts[trigger] || 0) + 1;
+        }
       });
 
-      const mostCommonBehavior = Object.keys(behaviorCounts).reduce((a, b) => 
-        behaviorCounts[a] > behaviorCounts[b] ? a : b, ""
-      );
+      const mostCommonBehavior = Object.keys(behaviorCounts).length > 0 
+        ? Object.keys(behaviorCounts).reduce((a, b) => 
+            behaviorCounts[a] > behaviorCounts[b] ? a : b
+          ) 
+        : "";
 
-      const mostCommonTrigger = Object.keys(triggerCounts).reduce((a, b) => 
-        triggerCounts[a] > triggerCounts[b] ? a : b, ""
-      );
+      const mostCommonTrigger = Object.keys(triggerCounts).length > 0
+        ? Object.keys(triggerCounts).reduce((a, b) => 
+            triggerCounts[a] > triggerCounts[b] ? a : b
+          )
+        : "";
 
       setSummary({
         totalToday,
@@ -79,6 +88,7 @@ const Dashboard = () => {
       });
 
     } catch (err) {
+      console.error("Failed to load dashboard data:", err);
       setError("Failed to load dashboard data");
     } finally {
       setLoading(false);
@@ -89,34 +99,40 @@ const Dashboard = () => {
     loadDashboardData();
   }, []);
 
-  const handleQuickAdd = async (behaviorType) => {
+const handleQuickAdd = async (behaviorType) => {
     try {
       const behaviorData = {
-        type: behaviorType.name,
+        type: behaviorType.Name || behaviorType.name,
         trigger: "Unknown",
         intensity: 3,
         timestamp: new Date().toISOString(),
         notes: `Quick logged via dashboard`
       };
 
-      await behaviorService.create(behaviorData);
-      toast.success(`${behaviorType.name} logged successfully!`);
-      loadDashboardData();
+      const result = await behaviorService.create(behaviorData);
+      if (result) {
+        toast.success(`${behaviorType.Name || behaviorType.name} logged successfully!`);
+        loadDashboardData();
+      }
     } catch (error) {
+      console.error("Failed to log behavior:", error);
       toast.error("Failed to log behavior");
     }
   };
 
-  const handleDeleteBehavior = async (behaviorId) => {
+const handleDeleteBehavior = async (behaviorId) => {
     if (!window.confirm("Are you sure you want to delete this behavior entry?")) {
       return;
     }
 
     try {
-      await behaviorService.delete(behaviorId);
-      toast.success("Behavior deleted successfully");
-      loadDashboardData();
+      const result = await behaviorService.delete(behaviorId);
+      if (result) {
+        toast.success("Behavior deleted successfully");
+        loadDashboardData();
+      }
     } catch (error) {
+      console.error("Failed to delete behavior:", error);
       toast.error("Failed to delete behavior");
     }
   };

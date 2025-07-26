@@ -26,12 +26,14 @@ const History = () => {
   const [typeFilter, setTypeFilter] = useState("all");
   const [intensityFilter, setIntensityFilter] = useState("all");
 
-  const loadBehaviors = async () => {
+const loadBehaviors = async () => {
     try {
+      setLoading(true);
       setError(null);
       const data = await behaviorService.getAll();
       setBehaviors(data.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)));
     } catch (err) {
+      console.error("Failed to load behavior history:", err);
       setError("Failed to load behavior history");
     } finally {
       setLoading(false);
@@ -93,16 +95,19 @@ const History = () => {
     setFilteredBehaviors(filtered);
   }, [behaviors, searchQuery, dateFilter, typeFilter, intensityFilter]);
 
-  const handleDeleteBehavior = async (behaviorId) => {
+const handleDeleteBehavior = async (behaviorId) => {
     if (!window.confirm("Are you sure you want to delete this behavior entry?")) {
       return;
     }
 
     try {
-      await behaviorService.delete(behaviorId);
-      toast.success("Behavior deleted successfully");
-      loadBehaviors();
+      const result = await behaviorService.delete(behaviorId);
+      if (result) {
+        toast.success("Behavior deleted successfully");
+        loadBehaviors();
+      }
     } catch (error) {
+      console.error("Failed to delete behavior:", error);
       toast.error("Failed to delete behavior");
     }
   };

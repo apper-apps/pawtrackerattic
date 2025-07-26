@@ -126,7 +126,7 @@ const handleDeleteBehavior = async (behaviorId) => {
     }
 
     try {
-      const result = await behaviorService.delete(behaviorId);
+const result = await behaviorService.delete(behaviorId);
       if (result) {
         toast.success("Behavior deleted successfully");
         loadDashboardData();
@@ -244,7 +244,7 @@ const handleDeleteBehavior = async (behaviorId) => {
           <div className="space-y-4">
             {todayBehaviors.slice(0, 5).map((behavior) => (
               <BehaviorCard
-                key={behavior.id}
+key={behavior.Id}
                 behavior={behavior}
                 onEdit={(behavior) => navigate("/log", { state: { behavior } })}
                 onDelete={handleDeleteBehavior}

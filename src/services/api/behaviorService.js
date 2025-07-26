@@ -1,5 +1,7 @@
 import { toast } from 'react-toastify';
 
+import { toast } from 'react-toastify';
+
 class BehaviorService {
   constructor() {
     const { ApperClient } = window.ApperSDK;

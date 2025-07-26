@@ -110,9 +110,9 @@ const handleSubmit = async (e) => {
           required
         >
           <option value="">Select behavior type</option>
-          {behaviorTypes.map((type) => (
-            <option key={type.id} value={type.name}>
-              {type.name}
+{behaviorTypes.map((type) => (
+            <option key={type.Id} value={type.Name}>
+              {type.Name}
             </option>
           ))}
           <option value="custom">Custom behavior</option>
@@ -135,9 +135,9 @@ const handleSubmit = async (e) => {
           required
         >
           <option value="">Select trigger</option>
-          {triggerTypes.map((trigger) => (
-            <option key={trigger.id} value={trigger.name}>
-              {trigger.name}
+{triggerTypes.map((trigger) => (
+            <option key={trigger.Id} value={trigger.Name}>
+              {trigger.Name}
             </option>
           ))}
           <option value="custom">Custom trigger</option>
